@@ -144,7 +144,7 @@ jobs:
         if: matrix.installable == 'sdist'
         run: |
           sdist=$(ls dist/*.tar.gz | grep -v source | head -n1)
-          echo "INSTALLABLE=$dist" >> $GITHUB_ENV
+          echo "INSTALLABLE=$sdist" >> $GITHUB_ENV
 
           setup=$(tar -ztf "$sdist" | grep setup.py | grep -v testballoon)
           hash=$(tar -axzf "$sdist" "$setup" -O | sha256sum | cut -d" " -f1)
