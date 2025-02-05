@@ -25,16 +25,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-      - name: 🧰 Create cache key
-        run: |
-          hash=$(cat setup.py | sha256sum | cut -d" " -f1)
-          echo "CACHE_KEY=${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-setuppy-$hash" >> $GITHUB_ENV
-      - name: 🧰 Cache pip cache
-        uses: actions/cache@v4
-        id: pip-cache
-        with:
-          path: "~/.cache/pip"
-          key: "${{ env.CACHE_KEY }}"
       - name: 🏗 Install build dependencies
         run: |
           python -m pip install setuptools wheel --user
@@ -75,16 +65,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-      - name: 🧰 Create cache key
-        run: |
-          hash=$(cat setup.py | sha256sum | cut -d" " -f1)
-          echo "CACHE_KEY=${{ runner.os }}-python-${{ env.DEFAULT_PYTHON }}-setuppy-$hash" >> $GITHUB_ENV
-      - name: 🧰 Cache pip cache
-        uses: actions/cache@v4
-        id: pip-cache
-        with:
-          path: "~/.cache/pip"
-          key: "${{ env.CACHE_KEY }}"
       - name: 🚀 Run pre-commit
         run: |
           pip install pre-commit
@@ -105,7 +85,7 @@ jobs:
       - name: 🧰 Create cache key
         run: |
           hash=$(cat setup.py | sha256sum | cut -d" " -f1)
-          echo "CACHE_KEY=${{ runner.os }}-python-${{ matrix.python }}-setuppy-$hash" >> $GITHUB_ENV
+          echo "CACHE_KEY=${{ github.job }}-${{ runner.os }}-python-${{ matrix.python }}-setuppy-$hash" >> $GITHUB_ENV
       - name: 🧰 Cache pip cache
         uses: actions/cache@v4
         id: pip-cache
@@ -157,14 +137,14 @@ jobs:
           wheel=$(ls dist/*.whl | head -n1)
           metadata=$(unzip -l "$wheel" | grep METADATA | tr -s " " | cut -d" " -f 5)
           hash=$(unzip -p "$wheel" "$metadata" | grep "Requires-Dist:" | sort  | sha256sum | cut -d" " -f1)
-          echo "CACHE_KEY=${{ runner.os }}-python-${{ matrix.python }}-wheel-$hash" >> $GITHUB_ENV
+          echo "CACHE_KEY=${{ github.job }}-${{ runner.os }}-python-${{ matrix.python }}-wheel-$hash" >> $GITHUB_ENV
       - name: 🧰 Create cache key for sdist
         if: matrix.installable == 'sdist'
         run: |
           sdist=$(ls dist/*.tar.gz | grep -v source | head -n1)
           setup=$(tar -ztf "$sdist" | grep setup.py | grep -v testballoon)
           hash=$(tar -axzf "$sdist" "$setup" -O | sha256sum | cut -d" " -f1)
-          echo "CACHE_KEY=${{ runner.os }}-python-${{ matrix.python }}-setuppy-$hash" >> $GITHUB_ENV
+          echo "CACHE_KEY=${{ github.job }}-${{ runner.os }}-python-${{ matrix.python }}-setuppy-$hash" >> $GITHUB_ENV
       - name: 🧰 Cache pip cache
         uses: actions/cache@v4
         id: pip-cache
