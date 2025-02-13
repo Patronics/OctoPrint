@@ -6674,8 +6674,8 @@ def parse_position_line(line):
                 result["e{}".format(m.group("id"))] = float(m.group("value"))
 
         else:
-            # apparently no E at all, should never happen but let's still handle this
-            return None
+            # apparently no E at all, should never happen on standard 3D printers but let's still handle this
+            return result
 
         return result
 
